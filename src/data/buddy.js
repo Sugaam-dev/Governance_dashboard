@@ -53,7 +53,7 @@ export const buddyResponses = {
     draft: `**Subject: ESCALATION: Portal Redesign BRD Awaiting Review (SLA Breached - 8 Days)**
 
 **To:** Ramesh K. (Digital Operations Business Owner)
-**CC:** Priya M. (Senior PM), PMO Governance Office
+**CC:** Mr Mohan. (Senior PM), PMO Governance Office
 
 Hi Ramesh,
 
