@@ -49,6 +49,17 @@ export default function PortfolioDashboard({
 
   const completedCount = todoItems.filter(t => t.completed).length;
 
+  const getDynamicSystemDate = () => {
+    const d = new Date();
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dayName = days[d.getDay()];
+    const dateNum = d.getDate();
+    const monthName = months[d.getMonth()];
+    const year = d.getFullYear();
+    return `${dayName}, ${dateNum} ${monthName} ${year}`;
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
@@ -64,9 +75,9 @@ export default function PortfolioDashboard({
         {/* Date & Count Badge */}
         <div className="flex items-center gap-2 bg-slate-100/60 border border-slate-200 rounded-full px-4 py-1.5 text-xs font-semibold text-slate-700">
           <Calendar size={14} className="text-slate-500" />
-          <span>Tue, 26 May 2026</span>
+          <span>{getDynamicSystemDate()}</span>
           <span className="h-1.5 w-1.5 rounded-full bg-slate-400 mx-1.5" />
-          <span className="text-blue-600 font-bold">22 projects active</span>
+          <span className="text-blue-600 font-bold">{projects.length} projects active</span>
         </div>
       </div>
 

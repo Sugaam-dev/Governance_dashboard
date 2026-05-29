@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Search, Sparkles, ChevronRight, Home, Menu } from 'lucide-react';
+import { Bell, Search, Sparkles, ChevronRight, Home, Menu, ArrowLeft } from 'lucide-react';
 
 export const Topbar = ({ activePage, onBackToLanding, activeProjectCount = 22, onMenuToggle }) => {
   // Page titles map
@@ -17,6 +17,11 @@ export const Topbar = ({ activePage, onBackToLanding, activeProjectCount = 22, o
     reports: "Executive Governance Reports",
     settings: "Rules & Configuration Settings"
   };
+
+  const showBackButton = 
+    window.location.hash !== "#landing" && 
+    window.location.hash !== "#dashboard" && 
+    window.location.hash !== "";
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 sticky top-0 px-4 md:px-6 flex items-center justify-between z-20">
@@ -39,7 +44,23 @@ export const Topbar = ({ activePage, onBackToLanding, activeProjectCount = 22, o
           <Home size={13} />
           <span className="hidden sm:inline">Landing</span>
         </button>
+        
         <ChevronRight size={11} className="text-slate-300 shrink-0" />
+
+        {showBackButton && (
+          <>
+            <button
+              onClick={() => window.history.back()}
+              className="p-1.5 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold transition flex items-center gap-1 text-[10px] shrink-0 border border-blue-200 shadow-sm"
+              title="Browser Back"
+            >
+              <ArrowLeft size={11} />
+              <span>Back</span>
+            </button>
+            <ChevronRight size={11} className="text-slate-300 shrink-0" />
+          </>
+        )}
+
         <div className="min-w-0">
           <h1 className="text-xs md:text-sm font-bold text-slate-800 tracking-tight truncate" style={{ fontFamily: 'var(--font-display)', margin: 0 }}>
             {pageTitles[activePage] || "Platform"}

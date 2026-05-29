@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppShell } from './components/AppShell';
 import LandingPage from './pages/LandingPage';
 import Auth from './pages/Auth';
@@ -28,33 +28,101 @@ export default function App() {
   
   const [activePage, setActivePage] = useState("dashboard");
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [redirectTarget, setRedirectTarget] = useState(null);
   
   // Connects dashboard chips to buddy chat pre-fills
   const [buddyInitialQuery, setBuddyInitialQuery] = useState(null);
 
+  // Apply state from history entry
+  const applyState = (state) => {
+    if (!state) return;
+    if (state.view === "landing") {
+      setShowLanding(true);
+      setShowAuth(false);
+    } else if (state.view === "auth") {
+      setShowLanding(false);
+      setShowAuth(true);
+    } else if (state.view === "app") {
+      setShowLanding(false);
+      setShowAuth(false);
+      setActivePage(state.page);
+      setSelectedProjectId(state.projectId);
+      if (state.buddyQuery) {
+        setBuddyInitialQuery(state.buddyQuery);
+      }
+    }
+  };
+
+  // Browser History API synchronization
+  useEffect(() => {
+    // 1. Initialize history state on first render
+    const initialHash = window.location.hash || "#landing";
+    if (initialHash === "#landing") {
+      window.history.replaceState({ view: "landing", page: "dashboard", projectId: null, buddyQuery: null }, "", "#landing");
+    } else if (initialHash === "#auth") {
+      window.history.replaceState({ view: "auth", page: "dashboard", projectId: null, buddyQuery: null }, "", "#auth");
+    } else {
+      const pageName = initialHash.replace("#", "").split("/")[0] || "dashboard";
+      const projId = initialHash.split("/")[1] || null;
+      window.history.replaceState({ view: "app", page: pageName, projectId: projId, buddyQuery: null }, "", initialHash);
+      
+      // Apply locally for refresh safety
+      setShowLanding(false);
+      setShowAuth(false);
+      setActivePage(pageName);
+      setSelectedProjectId(projId);
+    }
+
+    const handlePopState = (e) => {
+      if (e.state) {
+        applyState(e.state);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // Unified navigation helper
+  const navigateTo = (view, page = "dashboard", projectId = null, buddyQuery = null) => {
+    if (buddyQuery !== null) {
+      setBuddyInitialQuery(buddyQuery);
+    }
+
+    const state = { view, page, projectId, buddyQuery };
+    const hash = view === "landing"
+      ? "#landing"
+      : view === "auth"
+        ? "#auth"
+        : `#${page}${projectId ? '/' + projectId : ''}`;
+
+    window.history.pushState(state, '', hash);
+    applyState(state);
+  };
+
   // Reset session and return to Landing
   const handleLogout = () => {
     setCurrentUser(null);
-    setShowLanding(true);
-    setShowAuth(false);
-    setActivePage("dashboard");
+    setRedirectTarget(null);
+    navigateTo("landing");
   };
 
   // Navigate to project detail page
   const handleSelectProject = (projectId) => {
-    setSelectedProjectId(projectId);
-    setActivePage("projectdetail");
+    navigateTo("app", "projectdetail", projectId);
   };
 
   // Connects quick action chips to conversational buddy
   const handleTriggerBuddyQuery = (queryText) => {
-    setBuddyInitialQuery(queryText);
-    setActivePage("buddy");
+    navigateTo("app", "buddy", null, queryText);
   };
 
-  // Back button navigation
-  const handleBackToProjects = () => {
-    setActivePage("projects");
+  // Successful login callback handler
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+    const target = redirectTarget || "dashboard";
+    setRedirectTarget(null); // Reset target redirection
+    navigateTo("app", target, null);
   };
 
   // Main page switching router
@@ -68,7 +136,7 @@ export default function App() {
             trends={governanceTrends}
             onSelectProject={handleSelectProject}
             onTriggerBuddyQuery={handleTriggerBuddyQuery}
-            onChangePage={setActivePage}
+            onChangePage={(page) => navigateTo("app", page, null)}
           />
         );
       case "workflow":
@@ -90,7 +158,7 @@ export default function App() {
           <ProjectDetail 
             projectId={selectedProjectId} 
             projects={projects} 
-            onBack={handleBackToProjects} 
+            onBack={() => window.history.back()} 
           />
         );
       case "documents":
@@ -125,7 +193,7 @@ export default function App() {
             trends={governanceTrends}
             onSelectProject={handleSelectProject}
             onTriggerBuddyQuery={handleTriggerBuddyQuery}
-            onChangePage={setActivePage}
+            onChangePage={(page) => navigateTo("app", page, null)}
           />
         );
     }
@@ -137,12 +205,19 @@ export default function App() {
       <LandingPage 
         onLaunchDashboard={() => {
           if (currentUser) {
-            setShowLanding(false);
+            navigateTo("app", "dashboard", null);
           } else {
-            setShowLanding(false);
-            setShowAuth(true);
+            navigateTo("auth", "dashboard", null);
           }
         }} 
+        onBuddyClick={() => {
+          if (currentUser) {
+            navigateTo("app", "buddy", null);
+          } else {
+            setRedirectTarget("buddy");
+            navigateTo("auth", "buddy", null);
+          }
+        }}
       />
     );
   }
@@ -151,10 +226,7 @@ export default function App() {
   if (showAuth) {
     return (
       <Auth 
-        onLoginSuccess={(user) => {
-          setCurrentUser(user);
-          setShowAuth(false);
-        }} 
+        onLoginSuccess={handleLoginSuccess} 
       />
     );
   }
@@ -164,11 +236,9 @@ export default function App() {
     <AppShell
       activePage={activePage}
       setActivePage={(page) => {
-        // Reset selected project when clicking other pages
-        if (page !== "projectdetail") setSelectedProjectId(null);
-        setActivePage(page);
+        navigateTo("app", page, null);
       }}
-      onBackToLanding={() => setShowLanding(true)}
+      onBackToLanding={() => navigateTo("landing")}
       currentUser={currentUser}
       onLogout={handleLogout}
       activeProjectCount={projects.length}

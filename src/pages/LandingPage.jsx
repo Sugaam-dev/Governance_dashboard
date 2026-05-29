@@ -1,7 +1,7 @@
 import React from 'react';
-import { ShieldCheck, Bot, BarChart3, FileText, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Bot, BarChart3, FileText, ArrowRight, Zap } from 'lucide-react';
 
-export default function LandingPage({ onLaunchDashboard }) {
+export default function LandingPage({ onLaunchDashboard, onBuddyClick }) {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between selection:bg-blue-500 selection:text-white" style={{ fontFamily: 'var(--font-sans)' }}>
       {/* Top Navigation */}
@@ -27,14 +27,14 @@ export default function LandingPage({ onLaunchDashboard }) {
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-4xl" style={{ fontFamily: 'var(--font-display)', margin: '0 0 1.5rem 0' }}>
-          PMRG Solution AI-Assisted <br />
+          AI-Assisted <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-emerald-400">
-            Change Governance Platform
+            Governance Platform
           </span>
         </h1>
 
         <p className="text-slate-400 text-base sm:text-xl max-w-3xl leading-relaxed font-light mb-10">
-          An AI-assisted governance platform that controls BRD-to-development flow, provides portfolio visibility across 22 projects, and equips project managers with a smart Buddy for approvals, risks, and next actions.
+          An AI-assisted governance platform that controls BRD-to-development flow, provides portfolio visibility across all active projects, and equips project managers with a smart Buddy for approvals, risks, and next actions.
         </p>
 
         {/* Action Button */}
@@ -92,23 +92,30 @@ export default function LandingPage({ onLaunchDashboard }) {
         </div>
 
         {/* Secondary Features Banner */}
-        <div className="w-full mt-12 bg-slate-800/20 border border-slate-800 rounded-2xl p-6 flex flex-col md:flex-row justify-around items-start md:items-center gap-6">
-          <div className="flex items-center gap-3 text-left">
-            <div className="h-8 w-8 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400">
-              <Bot size={16} />
+        <div className="w-full mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <button
+            onClick={onBuddyClick}
+            className="bg-slate-800/20 border border-slate-800 hover:border-blue-500/40 hover:bg-slate-800/40 hover:scale-[1.01] rounded-2xl p-6 flex items-center gap-4 text-left transition duration-200 cursor-pointer w-full group outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <div className="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center text-blue-400 group-hover:bg-blue-500/25 transition">
+              <Bot size={20} />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-300 uppercase">Project Manager Buddy</h4>
-              <p className="text-xs text-slate-500 font-light mt-0.5">Quickly generate escalations, agendas, and draft chasing notifications.</p>
+              <div className="flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Project Manager Buddy</h4>
+                <span className="bg-blue-500/10 text-blue-400 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase group-hover:bg-blue-500/25 transition">SSO Access</span>
+              </div>
+              <p className="text-xs text-slate-500 font-semibold mt-1">Directly launch conversational AI assistant and draft escalations (SSO login required).</p>
             </div>
-          </div>
-          <div className="flex items-center gap-3 text-left">
-            <div className="h-8 w-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400">
-              <ShieldCheck size={16} />
+          </button>
+
+          <div className="bg-slate-800/40 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 flex items-center gap-4 text-left transition duration-200">
+            <div className="h-10 w-10 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
+              <ShieldCheck size={20} />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-300 uppercase">Human-In-The-Loop Approval</h4>
-              <p className="text-xs text-slate-500 font-light mt-0.5">AI assessment prompts suggestions, but all gate changes require human verification.</p>
+              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Human-In-The-Loop Approval</h4>
+              <p className="text-xs text-slate-500 font-semibold mt-1">AI assessment prompts suggestions, but all gate changes require human verification.</p>
             </div>
           </div>
         </div>
@@ -116,7 +123,7 @@ export default function LandingPage({ onLaunchDashboard }) {
 
       {/* Footer */}
       <footer className="border-t border-slate-800 py-6 text-center text-xs text-slate-600 font-semibold max-w-7xl mx-auto w-full">
-        © 2026 PMRG Solution Broadband & Cable Communications Ltd. All rights reserved. • Internal Decision Control Layer
+        © 2026 PMRG Solution. All rights reserved. • Internal Decision Control Layer
       </footer>
     </div>
   );

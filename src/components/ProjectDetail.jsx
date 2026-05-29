@@ -47,10 +47,10 @@ export default function ProjectDetail({ projectId, projects, onBack }) {
       <div className="flex justify-between items-center bg-white p-3 border border-slate-200 rounded-xl shadow-sm">
         <button 
           onClick={onBack}
-          className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition flex items-center gap-1.5 text-xs font-semibold"
+          className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 border border-blue-200 transition flex items-center gap-1.5 text-xs font-bold shadow-sm"
         >
           <ArrowLeft size={14} />
-          <span>Back to Projects Directory</span>
+          <span>Go Back</span>
         </button>
         <span className="text-[10px] text-slate-400 font-bold uppercase">Project ID: {project.id}</span>
       </div>
